@@ -3,3 +3,6 @@ seed*
 *.png
 *.pdf
 *.lammpstrj
+*.dat
+log.*
+*.xyz
