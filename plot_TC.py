@@ -1,6 +1,7 @@
 import os
 import numpy as np
 import matplotlib
+import re
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mtick
@@ -24,9 +25,47 @@ ps2s = 1e-12
 A2m = 1e-10
 e2J = 1.6e-19
 
+def get_vol():
+    match_number = re.compile('-?\ *[0-9]+\.?[0-9]*(?:[Ee]\ *-?\ *[0-9]+)?')
+    with open("./seed1/log.lammps", 'r') as f:
+        lines = f.readlines()
+        for line in lines:
+            if "orthogonal box" in line:
+                print(line)
+                numbers = re.findall(match_number, line)
+                xlo = float(numbers[3]) - float(numbers[0])
+                ylo = float(numbers[4]) - float(numbers[1])
+                zlo = float(numbers[5]) - float(numbers[2])
+                vol = ylo * zlo * xlo
+                print("val: {:.3e} A^3, L : {:.3e}".format( vol, vol**(1./3)))
+                return vol
+
+def get_simulation_info():
+    match_number = re.compile('-?\ *[0-9]+\.?[0-9]*(?:[Ee]\ *-?\ *[0-9]+)?')
+    with open("in.GK", 'r') as f:
+        for line in f:
+            if line.startswith('timestep'):
+                num = re.findall(match_number, line)
+                dT = float(num[0])
+            if 'variable p equal' in line:
+                num = re.findall(match_number, line)
+                p = float(num[0])
+            if 'variable s equal' in line:
+                num = re.findall(match_number, line)
+                s = float(num[0])
+            if 'variable TEMP equal' in line:
+                num = re.findall(match_number, line)
+                TEMP = float(num[0])
+    sample_time = s*dT
+    print("T: {} K, t_sample: {:.3e}, len: {}".format(TEMP, sample_time, p))
+    return (TEMP, sample_time, int(p))
+
+
 def main():
-    nstep = 8000
-    deltaT = 0.005  # ps
+    V = get_vol
+    V = get_vol()
+    T, deltaT, nstep = get_simulation_info()
+
     tmax = nstep * deltaT
 
     aveHCACF = np.zeros(nstep)
@@ -35,8 +74,6 @@ def main():
     t = np.arange(nstep)*deltaT*1 # 100 ps
     print("Total time: {} ps".format(tmax))
 
-    V = 42.432**3
-    T = 40
     convert = e2J*e2J/ps2s/A2m
     ratio = convert/kB/T/T/V*1*deltaT
     for iseed in np.arange(0,10,1):
@@ -44,7 +81,7 @@ def main():
         count +=1
         dirName = 'seed'+str(iseed+1)
         os.chdir(dirName)
-        os.system("tail -n 8000 J0Jt.dat > data.txt")
+        os.system("tail -n {} J0Jt.dat > data.txt".format(nstep))
         data = np.loadtxt('data.txt')
         HCACF = data[:,3:6]
         aveHCACF +=np.sum(HCACF,axis = 1)
