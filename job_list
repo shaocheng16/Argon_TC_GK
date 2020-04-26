@@ -1,0 +1,10 @@
+~/lmp_mpi -i in.GK > out.log;24;M;seed1
+~/lmp_mpi -i in.GK > out.log;24;M;seed2
+~/lmp_mpi -i in.GK > out.log;24;M;seed3
+~/lmp_mpi -i in.GK > out.log;24;M;seed4
+~/lmp_mpi -i in.GK > out.log;24;M;seed5
+~/lmp_mpi -i in.GK > out.log;24;M;seed6
+~/lmp_mpi -i in.GK > out.log;24;M;seed7
+~/lmp_mpi -i in.GK > out.log;24;M;seed8
+~/lmp_mpi -i in.GK > out.log;24;M;seed9
+~/lmp_mpi -i in.GK > out.log;24;M;seed10

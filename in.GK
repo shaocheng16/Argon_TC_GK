@@ -32,6 +32,8 @@ variable seed equal 111111
 
 
 dump 1 all atom 2000 01_nve.lammpstrj
+    thermo_style custom step temp press pxx pyy pzz pe ke etotal 
+    thermo 100
     fix 1 all nve
     fix 2 all langevin ${TEMP} ${TEMP} 0.1 ${seed}
         run 200000
@@ -40,6 +42,8 @@ dump 1 all atom 2000 01_nve.lammpstrj
 undump 1
 
 dump 1 all atom 2000 02_nve_momentum.lammpstrj
+    thermo_style custom step temp press pxx pyy pzz pe ke etotal 
+    thermo 100
     fix 1 all nve
     fix 2 all momentum 100 linear 1 1 1
         run 200000
@@ -48,6 +52,8 @@ dump 1 all atom 2000 02_nve_momentum.lammpstrj
 undump 1
 
 dump 1 all atom 2000 03_nve.lammpstrj
+    thermo_style custom step temp press pxx pyy pzz pe ke etotal 
+    thermo 100
     fix 1 all nve
         run 200000
     unfix 1
